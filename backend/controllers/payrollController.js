@@ -188,33 +188,24 @@ const generatePayroll = async (req, res) => {
         const { companyId } = req.user;
         const { month, year } = req.body;
 
-        // Get all employees in the company
+        // Get all employees in the company with their salary
         const [employees] = await connection.query(
-            `SELECT e.id, e.user_id FROM employees e
+            `SELECT e.id, e.salary, e.user_id FROM employees e
              INNER JOIN users u ON e.user_id = u.id
-             WHERE u.company_id = ?`,
+             WHERE u.company_id = ? AND e.salary IS NOT NULL AND e.salary > 0`,
             [companyId]
         );
 
         let generatedCount = 0;
 
         for (const employee of employees) {
-            // Get salary structure
-            const [salaryStructure] = await connection.query(
-                'SELECT * FROM salary_structure WHERE employee_id = ? ORDER BY effective_from DESC LIMIT 1',
-                [employee.id]
-            );
+            const baseSalary = parseFloat(employee.salary) || 0;
 
-            if (salaryStructure.length === 0) continue;
-
-            // Get salary components
-            const [components] = await connection.query(
-                'SELECT * FROM salary_components WHERE salary_structure_id = ?',
-                [salaryStructure[0].id]
-            );
-
-            // Calculate salary
-            const calculatedSalary = calculateSalaryComponents(salaryStructure[0].base_wage, components);
+            // Simple calculation: 10% allowances, 5% deductions
+            const allowances = baseSalary * 0.10;
+            const deductions = baseSalary * 0.05;
+            const grossSalary = baseSalary + allowances;
+            const netSalary = grossSalary - deductions;
 
             // Get attendance for the month
             const [attendance] = await connection.query(
@@ -236,34 +227,18 @@ const generatePayroll = async (req, res) => {
                 await connection.query(
                     `UPDATE payroll 
                      SET base_amount = ?, total_allowances = ?, total_deductions = ?, 
-                         gross_salary = ?, net_salary = ?, payable_days = ?
+                         gross_salary = ?, net_salary = ?, payable_days = ?, payment_status = 'PENDING'
                      WHERE id = ?`,
-                    [
-                        calculatedSalary.base_wage,
-                        calculatedSalary.total_allowances,
-                        calculatedSalary.total_deductions,
-                        calculatedSalary.gross_salary,
-                        calculatedSalary.net_salary,
-                        payableDays,
-                        existing[0].id
-                    ]
+                    [baseSalary, allowances, deductions, grossSalary, netSalary, payableDays, existing[0].id]
                 );
             } else {
                 // Create new
                 await connection.query(
                     `INSERT INTO payroll (
                         employee_id, month, year, base_amount, total_allowances, total_deductions,
-                        gross_salary, net_salary, payable_days
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [
-                        employee.id, month, year,
-                        calculatedSalary.base_wage,
-                        calculatedSalary.total_allowances,
-                        calculatedSalary.total_deductions,
-                        calculatedSalary.gross_salary,
-                        calculatedSalary.net_salary,
-                        payableDays
-                    ]
+                        gross_salary, net_salary, payable_days, payment_status
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING')`,
+                    [employee.id, month, year, baseSalary, allowances, deductions, grossSalary, netSalary, payableDays]
                 );
             }
 
@@ -338,10 +313,88 @@ const getPayslip = async (req, res) => {
     }
 };
 
+/**
+ * Get all payrolls (Admin/HR)
+ */
+const getAllPayrolls = async (req, res) => {
+    try {
+        const { companyId } = req.user;
+
+        const [payrolls] = await pool.query(
+            `SELECT p.*, e.first_name, e.last_name, e.department, u.employee_id
+             FROM payroll p
+             INNER JOIN employees e ON p.employee_id = e.id
+             INNER JOIN users u ON e.user_id = u.id
+             WHERE u.company_id = ?
+             ORDER BY p.year DESC, p.month DESC, e.first_name`,
+            [companyId]
+        );
+
+        res.status(200).json({
+            success: true,
+            data: payrolls
+        });
+
+    } catch (error) {
+        console.error('Get all payrolls error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching payrolls',
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Get my payrolls (Employee)
+ */
+const getMyPayrolls = async (req, res) => {
+    try {
+        const { userId } = req.user;
+
+        // Get employee ID
+        const [employees] = await pool.query(
+            'SELECT id FROM employees WHERE user_id = ?',
+            [userId]
+        );
+
+        if (employees.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Employee profile not found'
+            });
+        }
+
+        const employeeId = employees[0].id;
+
+        const [payrolls] = await pool.query(
+            `SELECT * FROM payroll 
+             WHERE employee_id = ?
+             ORDER BY year DESC, month DESC`,
+            [employeeId]
+        );
+
+        res.status(200).json({
+            success: true,
+            data: payrolls
+        });
+
+    } catch (error) {
+        console.error('Get my payrolls error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching payrolls',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     getMySalary,
     getEmployeeSalary,
     updateSalaryStructure,
     generatePayroll,
-    getPayslip
+    getPayslip,
+    getAllPayrolls,
+    getMyPayrolls
 };

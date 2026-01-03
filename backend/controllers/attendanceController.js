@@ -316,11 +316,57 @@ const updateAttendance = async (req, res) => {
     }
 };
 
+/**
+ * Get live employee status (Admin/HR)
+ */
+const getLiveEmployeeStatus = async (req, res) => {
+    try {
+        const { companyId } = req.user;
+        const today = new Date().toISOString().split('T')[0];
+
+        const [employees] = await pool.query(
+            `SELECT e.id, e.first_name, e.last_name, e.department, u.employee_id,
+                    a.check_in, a.check_out, a.date
+             FROM employees e
+             INNER JOIN users u ON e.user_id = u.id
+             LEFT JOIN attendance a ON e.id = a.employee_id AND a.date = ?
+             WHERE u.company_id = ? AND u.role = 'EMPLOYEE'
+             ORDER BY e.first_name, e.last_name`,
+            [today, companyId]
+        );
+
+        // Mark status as active if checked in and not checked out
+        const employeeStatus = employees.map(emp => ({
+            employeeId: emp.id,
+            employeeNumber: emp.employee_id,
+            name: `${emp.first_name} ${emp.last_name}`,
+            department: emp.department || 'N/A',
+            status: emp.check_in && !emp.check_out ? 'active' : 'inactive',
+            checkInTime: emp.check_in || null,
+            checkOutTime: emp.check_out || null
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: employeeStatus
+        });
+
+    } catch (error) {
+        console.error('Get live employee status error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching live employee status',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     checkIn,
     checkOut,
     getMyAttendance,
     getEmployeeAttendance,
     getDailyAttendance,
-    updateAttendance
+    updateAttendance,
+    getLiveEmployeeStatus
 };

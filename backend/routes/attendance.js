@@ -7,7 +7,8 @@ const {
     getMyAttendance,
     getEmployeeAttendance,
     getDailyAttendance,
-    updateAttendance
+    updateAttendance,
+    getLiveEmployeeStatus
 } = require('../controllers/attendanceController');
 
 // All routes require authentication
@@ -21,6 +22,7 @@ router.get('/my-attendance', getMyAttendance);
 // Admin/HR routes
 router.get('/employee/:id', isAdminOrHR, getEmployeeAttendance);
 router.get('/daily', isAdminOrHR, getDailyAttendance);
+router.get('/live-status', isAdminOrHR, getLiveEmployeeStatus);
 router.put('/:id', isAdminOrHR, updateAttendance);
 
 module.exports = router;

@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminEmployees from './pages/AdminEmployees';
 import AdminAttendance from './pages/AdminAttendance';
 import AdminLeaves from './pages/AdminLeaves';
+import AdminPayroll from './pages/AdminPayroll';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import EmployeeProfile from './pages/EmployeeProfile';
 import CreateEmployee from './pages/CreateEmployee';
@@ -31,6 +32,7 @@ function App() {
           <Route path="/admin/employees" element={<PrivateRoute requireAdminOrHR={true}><AdminEmployees /></PrivateRoute>} />
           <Route path="/admin/attendance" element={<PrivateRoute requireAdminOrHR={true}><AdminAttendance /></PrivateRoute>} />
           <Route path="/admin/leaves" element={<PrivateRoute requireAdminOrHR={true}><AdminLeaves /></PrivateRoute>} />
+          <Route path="/admin/payroll" element={<PrivateRoute requireAdminOrHR={true}><AdminPayroll /></PrivateRoute>} />
 
           {/* Employee Routes */}
           <Route path="/employee/dashboard" element={<PrivateRoute><EmployeeDashboard /></PrivateRoute>} />

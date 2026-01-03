@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../config/api';
+import AdminSidebar from '../components/AdminSidebar';
 import {
     FiGrid, FiUsers, FiClock, FiFileText, FiSettings,
     FiSearch, FiHelpCircle, FiCalendar, FiDownload, FiFilter
@@ -21,13 +22,37 @@ const AdminAttendance = () => {
     const fetchDailyAttendance = async () => {
         setLoading(true);
         try {
-            const response = await api.get(`/attendance/daily?date=${selectedDate}`);
-            setAttendance(response.data.data);
+            const response = await api.get(`/attendance/daily?date=${selectedDate}`); // Keep original endpoint for selectedDate functionality
+            setAttendance(response.data.data || []); // Use original state variable, add || []
         } catch (error) {
-            console.error('Error fetching attendance:', error);
+            console.error('Error fetching attendance:', error); // Keep original error message
         } finally {
             setLoading(false);
         }
+    };
+
+    const exportToCSV = () => {
+        if (attendance.length === 0) { // Use 'attendance' state for export
+            alert('No data to export');
+            return;
+        }
+
+        let csvContent = 'Date,Employee ID,Name,Check In,Check Out,Hours,Status\n'; // Simplified headers
+        attendance.forEach(record => {
+            const checkIn = record.check_in_time ? new Date(record.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+            const checkOut = record.check_out_time ? new Date(record.check_out_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+            csvContent += `${selectedDate},${record.employee_id || ''},"${record.first_name} ${record.last_name}",${checkIn},${checkOut},${record.work_hours || '0.00'},${record.status || ''}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `attendance-${selectedDate}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
@@ -82,15 +107,22 @@ const AdminAttendance = () => {
                 </header>
 
                 <div className="breadcrumb">
-                    Home &gt; <span>Attendance Log</span>
+                    Home &gt; <span>Attendance</span>
                 </div>
 
                 <div className="card">
                     <div className="card-header">
-                        <span className="card-title">Daily Attendance</span>
-                        <div className="btn-group">
-                            <button className="btn btn-primary" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
-                                <FiDownload /> Export Report
+                        <span className="card-title">DAILY ATTENDANCE</span>
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <input
+                                type="date"
+                                className="search-input"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                                style={{ width: 'auto' }}
+                            />
+                            <button className="btn btn-primary" onClick={exportToCSV}>
+                                Export CSV
                             </button>
                         </div>
                     </div>

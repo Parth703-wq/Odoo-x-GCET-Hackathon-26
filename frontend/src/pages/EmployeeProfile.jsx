@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../config/api';
 import {
     FiGrid, FiUsers, FiClock, FiFileText, FiSettings,
-    FiSearch, FiHelpCircle, FiCalendar, FiDollarSign, FiEdit
+    FiCalendar, FiDollarSign, FiEdit, FiSave, FiX
 } from 'react-icons/fi';
 
 const EmployeeProfile = () => {
@@ -12,6 +12,9 @@ const EmployeeProfile = () => {
     const navigate = useNavigate();
     const [employee, setEmployee] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
+    const [formData, setFormData] = useState({});
+    const [saveLoading, setSaveLoading] = useState(false);
 
     useEffect(() => {
         fetchProfile();
@@ -20,12 +23,47 @@ const EmployeeProfile = () => {
     const fetchProfile = async () => {
         try {
             const response = await api.get('/employees');
-            setEmployee(response.data.data[0]); // Get own profile
+            const profile = response.data.data[0];
+            setEmployee(profile);
+            setFormData({
+                phone: profile.phone || '',
+                address: profile.address || '',
+                city: profile.city || '',
+                state: profile.state || '',
+                pinCode: profile.pin_code || '',
+                emergencyContact: profile.emergency_contact || ''
+            });
         } catch (error) {
             console.error('Error fetching profile:', error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSave = async () => {
+        setSaveLoading(true);
+        try {
+            await api.put(`/employees/${employee.id}`, formData);
+            alert('Profile updated successfully!');
+            setIsEditing(false);
+            fetchProfile();
+        } catch (error) {
+            alert(error.response?.data?.message || 'Error updating profile');
+        } finally {
+            setSaveLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setIsEditing(false);
+        setFormData({
+            phone: employee.phone || '',
+            address: employee.address || '',
+            city: employee.city || '',
+            state: employee.state || '',
+            pinCode: employee.pin_code || '',
+            emergencyContact: employee.emergency_contact || ''
+        });
     };
 
     if (loading) return (
@@ -96,74 +134,188 @@ const EmployeeProfile = () => {
 
                 <div className="card">
                     <div className="card-header">
-                        <span className="card-title">My Profile</span>
-                        <div className="btn-group">
-                            <button className="btn btn-primary" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
-                                <FiEdit /> Edit Information
-                            </button>
+                        <span className="card-title">MY PROFILE</span>
+                        <div>
+                            {!isEditing ? (
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setIsEditing(true)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                                >
+                                    <FiEdit /> Edit Profile
+                                </button>
+                            ) : (
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={handleSave}
+                                        disabled={saveLoading}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#10B981' }}
+                                    >
+                                        <FiSave /> {saveLoading ? 'Saving...' : 'Save'}
+                                    </button>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={handleCancel}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6B7280' }}
+                                    >
+                                        <FiX /> Cancel
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    <div style={{ padding: '32px', display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) 2fr', gap: '48px' }}>
-                        {/* Left Column: Avatar & Quick Info */}
-                        <div style={{ textAlign: 'center', padding: '24px', background: '#F9FAFB', borderRadius: '12px', height: 'fit-content' }}>
-                            <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#E0E7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4F46E5', fontWeight: 'bold', fontSize: '48px', margin: '0 auto 16px' }}>
-                                {employee.first_name[0]}{employee.last_name[0]}
-                            </div>
-                            <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>{employee.first_name} {employee.last_name}</h2>
-                            <p style={{ color: '#6B7280', marginBottom: '16px' }}>{employee.designation || 'Employee'}</p>
-
-                            <div style={{ textAlign: 'left', marginTop: '24px', borderTop: '1px solid #E5E7EB', paddingTop: '16px' }}>
-                                <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'space-between' }}>
-                                    <label style={{ fontSize: '12px', color: '#6B7280' }}>Status</label>
-                                    <div style={{ color: '#059669', background: '#D1FAE5', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>Active</div>
+                    <div style={{ padding: '32px' }}>
+                        {/* Personal Information */}
+                        <div style={{ marginBottom: '32px' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '16px' }}>Personal Information</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Full Name</label>
+                                    <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                        {employee.first_name} {employee.last_name}
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <label style={{ fontSize: '12px', color: '#6B7280' }}>Joined</label>
-                                    <div style={{ fontWeight: '500', fontSize: '13px' }}>{new Date(employee.date_of_joining).toLocaleDateString()}</div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Email</label>
+                                    <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                        {employee.email}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Phone</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            style={{ width: '100%', padding: '8px 12px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                                        />
+                                    ) : (
+                                        <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                            {employee.phone || 'Not provided'}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Emergency Contact</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={formData.emergencyContact}
+                                            onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+                                            style={{ width: '100%', padding: '8px 12px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                                        />
+                                    ) : (
+                                        <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                            {employee.emergency_contact || 'Not provided'}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right Column: Detailed Info */}
+                        {/* Address Information */}
                         <div>
-                            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: '#111827', borderBottom: '1px solid #E5E7EB', paddingBottom: '8px' }}>Personal Information</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>Full Name</label>
-                                    <div style={{ fontWeight: '500' }}>{employee.first_name} {employee.last_name}</div>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '# 111827', marginBottom: '16px' }}>Address</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+                                <div style={{ gridColumn: '1 / -1' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Street Address</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={formData.address}
+                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                            style={{ width: '100%', padding: '8px 12px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                                        />
+                                    ) : (
+                                        <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                            {employee.address || 'Not provided'}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>Email</label>
-                                    <div style={{ fontWeight: '500' }}>{employee.email}</div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>City</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={formData.city}
+                                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                            style={{ width: '100%', padding: '8px 12px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                                        />
+                                    ) : (
+                                        <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                            {employee.city || 'Not provided'}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>Phone</label>
-                                    <div style={{ fontWeight: '500' }}>{employee.phone || '-'}</div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>State</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={formData.state}
+                                            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                                            style={{ width: '100%', padding: '8px 12px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                                        />
+                                    ) : (
+                                        <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                            {employee.state || 'Not provided'}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>Gender</label>
-                                    <div style={{ fontWeight: '500' }}>{employee.gender || '-'}</div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>PIN Code</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={formData.pinCode}
+                                            onChange={(e) => setFormData({ ...formData, pinCode: e.target.value })}
+                                            style={{ width: '100%', padding: '8px 12px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                                        />
+                                    ) : (
+                                        <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                            {employee.pin_code || 'Not provided'}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
+                        </div>
 
-                            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: '#111827', borderBottom: '1px solid #E5E7EB', paddingBottom: '8px' }}>Employment Details</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                        {/* Work Information (Read-only) */}
+                        <div style={{ marginTop: '32px', paddingTop: '32px', borderTop: '1px solid #E5E7EB' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '16px' }}>Work Information</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>Employee ID</label>
-                                    <div style={{ fontWeight: '500' }}>{employee.employee_id}</div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Employee ID</label>
+                                    <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                        {employee.employee_id}
+                                    </div>
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>Department</label>
-                                    <div style={{ fontWeight: '500' }}>{employee.department || '-'}</div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Department</label>
+                                    <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                        {employee.department || 'Not assigned'}
+                                    </div>
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>Employment Type</label>
-                                    <div style={{ fontWeight: '500' }}>{employee.employment_type || 'Full Time'}</div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Designation</label>
+                                    <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                        {employee.designation || 'Not assigned'}
+                                    </div>
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>Work Location</label>
-                                    <div style={{ fontWeight: '500' }}>{employee.work_location || 'Office'}</div>
+                                    <label style={{ display: 'block', fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Date of Joining</label>
+                                    <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>
+                                        {employee.date_of_joining ? new Date(employee.date_of_joining).toLocaleDateString() : 'Not provided'}
+                                    </div>
                                 </div>
                             </div>
                         </div>

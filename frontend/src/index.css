@@ -325,6 +325,79 @@ body {
 }
 
 /* Table Style (Exact Replication) */
+.table-container {
+    overflow-x: auto;
+    margin-top: 0;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.table thead {
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table th {
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: white;
+    vertical-align: middle;
+    color: var(--text-primary);
+}
+
+.table tbody tr {
+    transition: background-color 0.15s;
+}
+
+.table tbody tr:hover {
+    background: #F9FAFB !important;
+}
+
+.table tbody tr:hover td {
+    background: #F9FAFB;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--text-light);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: #F3F4F6;
+    color: var(--text-primary);
+}
+
+.btn-tab-group {
+    display: flex;
+    gap: 8px;
+    border-bottom: none;
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;

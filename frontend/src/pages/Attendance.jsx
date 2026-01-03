@@ -118,11 +118,6 @@ const Attendance = () => {
                 <div className="card" style={{ marginBottom: '24px' }}>
                     <div className="card-header">
                         <span className="card-title">Today's Action</span>
-                        <div className="btn-group">
-                            <button className="btn btn-primary" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
-                                View Roster
-                            </button>
-                        </div>
                     </div>
 
                     <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px' }}>
