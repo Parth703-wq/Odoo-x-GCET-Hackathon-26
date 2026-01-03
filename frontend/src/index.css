@@ -1,0 +1,424 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* CuteHR / Enterprise Theme */
+    --header-bg: #4F46E5;
+    /* Indigo 600 - Reference Purple */
+    --header-height: 64px;
+    --sidebar-width: 260px;
+    --sidebar-bg: #FFFFFF;
+    --body-bg: #F3F4F6;
+    /* Gray 100 */
+
+    /* Text Colors */
+    --text-primary: #111827;
+    /* Gray 900 */
+    --text-secondary: #6B7280;
+    /* Gray 500 */
+    --text-light: #9CA3AF;
+    /* Gray 400 */
+
+    /* Accents */
+    --primary: #4F46E5;
+    --primary-light: #EEF2FF;
+    /* Indigo 50 */
+    --success: #10B981;
+    --success-bg: #D1FAE5;
+    --warning: #F59E0B;
+    --error: #EF4444;
+
+    /* Borders */
+    --border-color: #E5E7EB;
+    /* Gray 200 */
+
+    /* Shadow */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-card: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--body-bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+}
+
+/* Layout Structure */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* 1. Sidebar (Fixed Left, White) */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    border-right: 1px solid var(--border-color);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    background: var(--header-bg);
+    /* Match header for seamless corner */
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-content {
+    flex: 1;
+    padding: 24px 16px;
+    overflow-y: auto;
+}
+
+.nav-section-title {
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    margin-top: 20px;
+    padding-left: 12px;
+}
+
+.nav-section-title:first-child {
+    margin-top: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+}
+
+.nav-item:hover {
+    background-color: #F9FAFB;
+    color: var(--primary);
+}
+
+.nav-item.active {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.nav-icon {
+    font-size: 18px;
+}
+
+/* 2. Top Header (Fixed Top, Purple) */
+.main-header {
+    height: var(--header-height);
+    background: var(--header-bg);
+    /* Deep Purple */
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-icon-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.profile-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.timer-btn {
+    background: #4ADE80;
+    /* Green */
+    color: #064E3B;
+    /* Dark Green Text */
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-family: monospace;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 3. Main Content Wrapper */
+.main-layout {
+    margin-left: var(--sidebar-width);
+    margin-top: var(--header-height);
+    flex: 1;
+    padding: 32px;
+    width: calc(100% - var(--sidebar-width));
+}
+
+.breadcrumb {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.breadcrumb span {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Cards & Containers */
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow-card);
+    padding: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Controls (Inputs, Selects, Buttons) */
+.control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: #F9FAFB;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+}
+
+.select-input {
+    padding: 10px 32px 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.btn-group {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: white;
+    /* Reference shows white buttons with gray text for Add Employees? No wait, reference shows Add Employees as Outline or White. Let's stick to standard clean. Reference check: "Add Employees" seems white bg with border. "Import Employees" same. */
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-primary:hover {
+    background: #F9FAFB;
+    border-color: #D1D5DB;
+}
+
+.btn-tab {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-tab.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Table Style (Exact Replication) */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 12px 24px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-color);
+    /* Light border */
+}
+
+.data-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: white;
+    vertical-align: middle;
+}
+
+.data-table tr:hover td {
+    background: #F9FAFB;
+}
+
+/* Elements inside table */
+.user-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-avatar-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.contact-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.contact-main {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.contact-sub {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.request-badge {
+    display: inline-flex;
+    width: 24px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    background: #84CC16;
+    /* Lime Green */
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.action-dots {
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* Profile Card in Sidebar (Top) */
+.sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-profile-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
