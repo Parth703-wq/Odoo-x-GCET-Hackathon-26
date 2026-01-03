@@ -1,276 +1,199 @@
-# Dayflow - Human Resource Management System
+# DayFlow HRMS
 
-**Every workday, perfectly aligned.**
+A comprehensive Human Resource Management System built with React and Node.js, featuring employee management, attendance tracking, leave management, and payroll processing.
 
-A full-stack HRMS application built with React, Node.js, Express, and MySQL.
+## 🌟 Features
 
-## Features
-
-✅ **Authentication & Authorization**
-- Sign Up with auto-generated Employee IDs
-- Sign In with JWT authentication
-- Role-based access control (Admin, HR, Employee)
-
-✅ **Employee Management**
-- Create, view, update, and delete employees
-- Profile management with multiple tabs
-- Document upload support
-
-✅ **Attendance Management**
-- Check In/Check Out system
-- Daily and weekly attendance views
-- Work hours calculation
-- Admin attendance tracking
-
-✅ **Leave Management**
-- Apply for leave (Paid, Sick, Unpaid)
-- Leave approval/rejection workflow
-- Leave balance tracking
-- Automatic attendance updates
-
-✅ **Payroll Management**
-- Salary structure with automatic calculations
-- Component-based salary (Basic, HRA, Allowances, etc.)
-- Payroll generation based on attendance
-- Payslip viewing
-
-## Tech Stack
-
-### Backend
-- Node.js & Express.js
-- MySQL (via XAMPP)
-- JWT Authentication
-- Bcrypt for password hashing
-
-### Frontend
-- React.js with Vite
-- React Router for navigation
-- Axios for API calls
-- Modern CSS with glassmorphism effects
-
-## Prerequisites
-
-- Node.js (v16 or higher)
-- XAMPP with MySQL running on port 3306
-- npm or yarn
-
-## Installation & Setup
-
-### 1. Database Setup
-
-1. Start XAMPP and ensure MySQL is running on port 3306
-2. Open phpMyAdmin or MySQL command line
-3. Run the database schema:
-
-```bash
-cd backend/database
-# Import schema.sql into MySQL
-mysql -u root -p < schema.sql
-```
-
-Or manually:
-- Open phpMyAdmin
-- Create a new database named `dayflow_hrms`
-- Import the `backend/database/schema.sql` file
-
-### 2. Backend Setup
-
-```bash
-cd backend
-
-# Install dependencies (already done)
-npm install
-
-# Configure environment variables
-# Edit .env file and update if needed:
-# - DB_PASSWORD (if you have a MySQL password)
-# - JWT_SECRET (change to a secure random string)
-
-# Start the backend server
-npm run dev
-```
-
-The backend will run on `http://localhost:5000`
-
-### 3. Frontend Setup
-
-```bash
-cd frontend
-
-# Install dependencies (already done)
-npm install
-
-# Start the frontend development server
-npm run dev
-```
-
-The frontend will run on `http://localhost:5173`
-
-## Usage
-
-### First Time Setup
-
-1. Open `http://localhost:5173` in your browser
-2. Click "Sign Up" to create your company and admin account
-3. Fill in the company details and your information
-4. Your Employee ID will be auto-generated (e.g., `OIJODO2024001`)
-5. After signup, you'll be logged in as an Admin
-
-### Admin/HR Features
-
-- **Dashboard**: View all employees and quick stats
-- **Add Employee**: Create new employee accounts (auto-generates password)
-- **Manage Attendance**: View and edit attendance records
-- **Approve Leaves**: Review and approve/reject leave requests
-- **Manage Payroll**: Set salary structures and generate payroll
+### Admin Features
+- **Dashboard Analytics** - Real-time charts showing attendance trends, leave distribution, and department statistics
+- **Employee Management** - Complete CRUD operations, bulk import via CSV, and data export
+- **Attendance Tracking** - Daily attendance monitoring with live employee status
+- **Leave Management** - Approve/reject leave requests with automated balance tracking
+- **Payroll System** - Generate monthly payroll, view detailed payslips, and export reports
+- **Reporting** - Export all data to CSV format for external analysis
 
 ### Employee Features
+- **Personal Dashboard** - Quick overview of attendance and leave status
+- **Profile Management** - Update personal and contact information
+- **Attendance** - Check-in/check-out functionality with work hours tracking
+- **Leave Application** - Apply for leaves and track request status
+- **Payroll** - View monthly payslips with detailed salary breakdown
 
-- **My Profile**: View and edit personal information
-- **Attendance**: Check in/out and view attendance history
-- **Leave Requests**: Apply for leave and track status
-- **Payroll**: View salary structure and payslips
+## 🛠️ Tech Stack
 
-## API Endpoints
+### Frontend
+- **React** - UI framework
+- **React Router** - Navigation
+- **Recharts** - Data visualization
+- **Axios** - HTTP client
 
-### Authentication
-- `POST /api/auth/signup` - Register company and admin
-- `POST /api/auth/signin` - User login
-- `POST /api/auth/change-password` - Change password
-- `GET /api/auth/me` - Get current user info
+### Backend
+- **Node.js** - Runtime environment
+- **Express** - Web framework
+- **MySQL** - Database
+- **JWT** - Authentication
+- **Bcrypt** - Password hashing
 
-### Employees
-- `POST /api/employees` - Create employee (Admin/HR)
-- `GET /api/employees` - Get all employees
-- `GET /api/employees/:id` - Get employee by ID
-- `PUT /api/employees/:id` - Update employee
-- `DELETE /api/employees/:id` - Delete employee (Admin)
+## 📋 Prerequisites
 
-### Attendance
-- `POST /api/attendance/check-in` - Check in
-- `POST /api/attendance/check-out` - Check out
-- `GET /api/attendance/my-attendance` - Get my attendance
-- `GET /api/attendance/employee/:id` - Get employee attendance (Admin/HR)
-- `GET /api/attendance/daily` - Get daily attendance (Admin/HR)
-- `PUT /api/attendance/:id` - Update attendance (Admin/HR)
+- Node.js (v14 or higher)
+- MySQL (v8 or higher)
+- npm or yarn
 
-### Leaves
-- `POST /api/leaves/apply` - Apply for leave
-- `GET /api/leaves/my-requests` - Get my leave requests
-- `GET /api/leaves/all-requests` - Get all requests (Admin/HR)
-- `PUT /api/leaves/:id/approve` - Approve leave (Admin/HR)
-- `PUT /api/leaves/:id/reject` - Reject leave (Admin/HR)
-- `GET /api/leaves/balance` - Get leave balance
+## 🚀 Installation
 
-### Payroll
-- `GET /api/payroll/my-salary` - Get my salary info
-- `GET /api/payroll/employee/:id` - Get employee salary (Admin/HR)
-- `PUT /api/payroll/employee/:id` - Update salary structure (Admin/HR)
-- `POST /api/payroll/generate` - Generate monthly payroll (Admin/HR)
-- `GET /api/payroll/slip/:id` - Get payslip
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/dayflow-hrms.git
+cd dayflow-hrms
+```
 
-## Employee ID Format
+### 2. Database Setup
+```sql
+CREATE DATABASE hrms_db;
+```
 
-Employee IDs are auto-generated in the format:
-`[CompanyInitials][FirstName][LastName][Year][SerialNumber]`
+Run the SQL schema file to create tables:
+```bash
+mysql -u root -p hrms_db < backend/config/schema.sql
+```
 
-Example: `OIJODO2024001`
-- `OI` = Odeo India (Company Name)
-- `JODO` = John Doe (Employee Name)
-- `2024` = Year of Joining
-- `001` = Serial Number
+### 3. Backend Setup
+```bash
+cd backend
+npm install
+```
 
-## Default Leave Types
+Create a `.env` file in the backend directory:
+```env
+PORT=5000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=hrms_db
+JWT_SECRET=your_jwt_secret_key
+```
 
-When a company is created, the following leave types are automatically added:
-- **Paid Time Off**: 24 days per year
-- **Sick Leave**: 7 days per year
-- **Unpaid Leave**: Unlimited
+Start the backend server:
+```bash
+npm start
+```
 
-## Project Structure
+### 4. Frontend Setup
+```bash
+cd frontend
+npm install
+```
+
+Start the development server:
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`
+
+## 📱 Usage
+
+### Default Admin Login
+- **Email:** admin@test.com
+- **Password:** password123
+
+### Creating Employees
+1. Login as admin
+2. Navigate to "Employees" section
+3. Click "Add Employees" or use "Import Employees" for bulk upload
+4. Fill in employee details and save
+
+### Managing Attendance
+**For Employees:**
+- Navigate to "Attendance" page
+- Click "Mark Check In" when starting work
+- Click "Mark Check Out" when leaving
+
+**For Admins:**
+- View daily attendance records
+- Monitor live employee status
+- Export attendance reports
+
+### Leave Management
+**For Employees:**
+1. Go to "Time Off" section
+2. Click "Apply for Leave"
+3. Select leave type, dates, and provide reason
+4. Submit request
+
+**For Admins:**
+- View all leave requests
+- Approve or reject with comments
+- Track leave balances
+
+### Payroll Processing
+1. Navigate to Admin Payroll section
+2. Select month and year
+3. Click "Generate Payroll"
+4. View and export payroll records
+
+## 📊 Key Features Explained
+
+### Import Employees
+Upload a CSV file with employee data. Required format:
+```csv
+firstName,lastName,email,department,designation,phone,salary
+John,Doe,john@example.com,Engineering,Developer,1234567890,50000
+```
+
+### Export Reports
+All admin pages support CSV export:
+- Employee lists
+- Attendance records
+- Leave requests
+- Payroll data
+
+### Real-time Dashboard
+- Weekly attendance trends (line chart)
+- Leave request distribution (pie chart)
+- Department-wise employee count (bar chart)
+- Live statistics cards
+
+## 🔐 Security
+
+- JWT-based authentication
+- Password hashing with bcrypt
+- Role-based access control (Admin/HR/Employee)
+- Protected API endpoints
+
+## 📂 Project Structure
 
 ```
 dayflow-hrms/
 ├── backend/
-│   ├── config/
-│   │   └── database.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── employeeController.js
-│   │   ├── attendanceController.js
-│   │   ├── leaveController.js
-│   │   └── payrollController.js
-│   ├── middleware/
-│   │   └── auth.js
-│   ├── routes/
-│   │   ├── auth.js
-│   │   ├── employees.js
-│   │   ├── attendance.js
-│   │   ├── leaves.js
-│   │   └── payroll.js
-│   ├── utils/
-│   │   ├── employeeIdGenerator.js
-│   │   ├── passwordGenerator.js
-│   │   └── salaryCalculator.js
-│   ├── database/
-│   │   └── schema.sql
-│   ├── uploads/
-│   ├── .env
-│   ├── server.js
-│   └── package.json
+│   ├── config/           # Database and configuration
+│   ├── controllers/      # Business logic
+│   ├── middleware/       # Auth and validation
+│   ├── routes/          # API routes
+│   └── server.js        # Entry point
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   │   └── PrivateRoute.jsx
-│   │   ├── config/
-│   │   │   └── api.js
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx
-│   │   ├── pages/
-│   │   │   ├── SignIn.jsx
-│   │   │   ├── SignUp.jsx
-│   │   │   └── Dashboard.jsx
-│   │   ├── styles/
-│   │   │   ├── Auth.css
-│   │   │   └── Dashboard.css
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── .env
-│   └── package.json
+│   │   ├── components/  # Reusable components
+│   │   ├── pages/       # Page components
+│   │   ├── context/     # Context providers
+│   │   └── config/      # API configuration
+│   └── public/
 └── README.md
 ```
 
-## Troubleshooting
+## 🤝 Contributing
 
-### Database Connection Issues
-- Ensure XAMPP MySQL is running
-- Check that MySQL is on port 3306
-- Verify database credentials in `backend/.env`
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-### Frontend Not Loading
-- Ensure backend is running on port 5000
-- Check browser console for errors
-- Verify API_BASE_URL in `frontend/.env`
+## 📝 License
 
-### Authentication Issues
-- Clear browser localStorage
-- Check JWT_SECRET in backend .env
-- Ensure token is being sent in requests
+This project is licensed under the MIT License.
 
-## Future Enhancements
+## 📧 Contact
 
-- File upload for profile pictures and documents
-- Email notifications
-- Advanced reporting and analytics
-- Payslip PDF generation
-- Multi-company support
-- Mobile responsive improvements
+For any queries or support, please contact the development team.
 
-## License
+---
 
-MIT
-
-## Author
-
-Built with ❤️ for modern HR management
+**Note:** Make sure to change default credentials and JWT secret in production environment.
